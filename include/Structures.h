@@ -27,7 +27,7 @@ struct Line {
     std::vector<std::string> stations; // 途经站点名称列表
 };
 
-// 乘车方案结构体
+// 乘车方案结构体，片段实现分段储存
 struct RouteSegment {
     std::string startStation;
     std::string endStation;
