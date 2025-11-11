@@ -6,28 +6,28 @@
 #include <string>
 #include <map>
 #include <algorithm> 
-// MetroGraph ç±»ä½¿ç”¨å›¾ç»“æ„ï¼ˆé‚»æ¥è¡¨ï¼‰å­˜å‚¨åœ°é“ç½‘ç»œï¼Œå¹¶å®ç°æ ¸å¿ƒæŸ¥è¯¢ç®—æ³•ã€‚
+// MetroGraph ÀàÊ¹ÓÃÍ¼½á¹¹£¨ÁÚ½Ó±í£©´æ´¢µØÌúÍøÂç£¬²¢ÊµÏÖºËĞÄ²éÑ¯Ëã·¨¡£
 class MetroGraph {
 public:
-    // æ„é€ å‡½æ•°ï¼Œåˆå§‹åŒ–å›¾
+    // ¹¹Ôìº¯Êı£¬³õÊ¼»¯Í¼
     MetroGraph(MetroData& data);
 
-    // 1. çº¿è·¯æŸ¥è¯¢: æŸ¥è¯¢æŸæ¡çº¿è·¯çš„æ‰€æœ‰ä¿¡æ¯
+    // 1. ÏßÂ·²éÑ¯: ²éÑ¯Ä³ÌõÏßÂ·µÄËùÓĞĞÅÏ¢
     void queryLineInfo(const std::string& lineName) const;
 
-    // 2. ç«™ç‚¹ä¿¡æ¯æŸ¥è¯¢: æ˜¾ç¤ºç«™ç‚¹æ‰€åœ¨çº¿è·¯ã€ä¸Šä¸€ç«™ã€ä¸‹ä¸€ç«™
+    // 2. Õ¾µãĞÅÏ¢²éÑ¯: ÏÔÊ¾Õ¾µãËùÔÚÏßÂ·¡¢ÉÏÒ»Õ¾¡¢ÏÂÒ»Õ¾
     void queryStationInfo(const std::string& stationName) const;
 
-    // 3. ä¹˜è½¦æŸ¥è¯¢: æŸ¥æ‰¾æ‰€æœ‰æœ‰æ•ˆä¹˜è½¦æ–¹æ¡ˆï¼Œå¹¶ç»™å‡ºæœ€çŸ­æ–¹æ¡ˆ
-    std::vector<Route> findRoutes(const std::string& start, const std::string& end) const;
+    // 3. ³Ë³µ²éÑ¯: ²éÕÒËùÓĞÓĞĞ§³Ë³µ·½°¸£¬²¢¸ø³ö×î¶Ì·½°¸ (ĞÂÔö usePrice ²ÎÊı)
+    std::vector<Route> findRoutes(const std::string& start, const std::string& end, bool usePrice) const;
 
-    // 4. çº¿è·¯å¢åŠ 
+    // 4. ÏßÂ·Ôö¼Ó
     bool addLine(const Line& newLine);
 
-    // 5. çº¿è·¯ä¿¡æ¯ç»´æŠ¤ï¼ˆæ›´æ–°ï¼‰
+    // 5. ÏßÂ·ĞÅÏ¢Î¬»¤£¨¸üĞÂ£©
     bool updateLine(const std::string& oldLineName, const Line& newLine);
 
-    // 6. è¾…åŠ©åŠŸèƒ½ï¼šæ˜¾ç¤ºæ‰€æœ‰çº¿è·¯å’Œç«™ç‚¹
+    // 6. ¸¨Öú¹¦ÄÜ£ºÏÔÊ¾ËùÓĞÏßÂ·ºÍÕ¾µã
     void displayAllInfo() const;
 
     MetroData& getData() { return data_; }
@@ -35,25 +35,25 @@ public:
     
 private:
     MetroData& data_;
-    std::vector<std::vector<Edge>> adjList; // å›¾çš„é‚»æ¥è¡¨
+    std::vector<std::vector<Edge>> adjList; // Í¼µÄÁÚ½Ó±í
 
-    // ç§æœ‰è¾…åŠ©å‡½æ•°ï¼š
-    // åˆå§‹åŒ–/æ›´æ–°é‚»æ¥è¡¨
+    // Ë½ÓĞ¸¨Öúº¯Êı£º
+    // ³õÊ¼»¯/¸üĞÂÁÚ½Ó±í
     void buildGraph();
     
-    // è¾…åŠ©å‡½æ•°ï¼šæ ¹æ®çº¿è·¯ä¿¡æ¯åœ¨å›¾ä¸­æ·»åŠ ç«™ç‚¹å’Œè¾¹
+    // ¸¨Öúº¯Êı£º¸ù¾İÏßÂ·ĞÅÏ¢ÔÚÍ¼ÖĞÌí¼ÓÕ¾µãºÍ±ß
     void processLineForGraph(const Line& line);
+
+    // Dijkstra ×î¶ÌÂ·¾¶Ëã·¨ (ĞÂÔö usePrice ²ÎÊı)
+    std::vector<int> dijkstra(int startId, int endId, std::vector<double>& results, bool usePrice) const;
     
-    // è¾…åŠ©å‡½æ•°ï¼šDijkstra æœ€çŸ­è·¯å¾„ç®—æ³•
-    std::vector<int> dijkstra(int startId, int endId, std::vector<double>& distances) const;
-    
-    // è¾…åŠ©å‡½æ•°ï¼šå°†IDè·¯å¾„è½¬æ¢ä¸ºRouteç»“æ„
-    Route pathIdToRoute(const std::vector<int>& pathIds, double totalCost) const;
-    
-    // ã€æ–°å¢ã€‘DFS è¾…åŠ©å‡½æ•°ï¼šæŸ¥æ‰¾å¤šæ¡éæœ€ä¼˜è·¯å¾„
+    // ½«IDÂ·¾¶×ª»»ÎªRoute½á¹¹ (ĞÂÔö totalPrice ²ÎÊı)
+    Route pathIdToRoute(const std::vector<int>& pathIds, double totalCost, double totalPrice) const;
+
+    // DFS ²éÕÒ¶àÌõ·Ç×îÓÅÂ·¾¶ (ĞÂÔö currentPrice ²ÎÊı)
     void dfsFindRoutes(int currentId, int endId, std::vector<int>& currentPath, 
-                       std::vector<bool>& visited, double currentTime, 
-                       std::vector<Route>& allRoutes, int maxStops) const;
+                       std::vector<bool>& visited, double currentTime, double currentPrice,
+                       std::vector<Route>& allRoutes, int maxStops, double maxCost) const;
 };
 
 #endif // METROGRAPH_H

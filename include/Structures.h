@@ -6,55 +6,58 @@
 #include <map>
 #include <limits>
 
-// å®šä¹‰æ— ç©·å¤§ï¼Œç”¨äºæœ€çŸ­è·¯å¾„ç®—æ³•
+// ¶¨ÒåÎŞÇî´ó£¬ÓÃÓÚ×î¶ÌÂ·¾¶Ëã·¨
 const double INF = std::numeric_limits<double>::infinity();
-// å®šä¹‰æ¢ä¹˜æ—¶é—´ï¼ˆæ¨¡æ‹Ÿï¼‰
-const double TRANSFER_TIME = 3.0; // æ¢ä¹˜éœ€è¦3åˆ†é’Ÿ
+// ¶¨Òå»»³ËÊ±¼ä£¨ĞŞ¸ÄÎª 1.0 ·ÖÖÓ£©
+const double TRANSFER_TIME = 1.0; 
 
-// ç«™ç‚¹ä¿¡æ¯ç»“æ„ä½“
+// Õ¾µãĞÅÏ¢½á¹¹Ìå
 struct Station {
-    int id;               // ç«™ç‚¹å”¯ä¸€ID (ç”¨äºå›¾çš„ç´¢å¼•)
-    std::string name;     // ç«™ç‚¹åç§°
-    std::string lineName; // ç«™ç‚¹æ‰€å±çº¿è·¯åç§° (ä¾‹å¦‚: 1å·çº¿)
+    int id;               // Õ¾µãÎ¨Ò»ID (ÓÃÓÚÍ¼µÄË÷Òı)
+    std::string name;     // Õ¾µãÃû³Æ
+    std::string lineName; // Õ¾µãËùÊôÏßÂ·Ãû³Æ (ÀıÈç: 1ºÅÏß)
 };
 
-// çº¿è·¯ä¿¡æ¯ç»“æ„ä½“
+// ÏßÂ·ĞÅÏ¢½á¹¹Ìå
 struct Line {
-    std::string name;       // çº¿è·¯åç§° (ä¾‹å¦‚: 1å·çº¿)
-    double fullPrice;       // å…¨ç¨‹ç¥¨ä»· (RMB)
-    std::string firstTrain; // é¦–ç­æ—¶é—´
-    std::string lastTrain;  // æœ«ç­æ—¶é—´
-    std::vector<std::string> stations; // é€”ç»ç«™ç‚¹åç§°åˆ—è¡¨
+    std::string name;       // ÏßÂ·Ãû³Æ (ÀıÈç: 1ºÅÏß)
+    double fullPrice;       // È«³ÌÆ±¼Û (RMB)
+    std::string firstTrain; // Ê×°àÊ±¼ä
+    std::string lastTrain;  // Ä©°àÊ±¼ä
+    std::vector<std::string> stations; // Í¾¾­Õ¾µãÃû³ÆÁĞ±í
 };
 
-// ä¹˜è½¦æ–¹æ¡ˆç»“æ„ä½“
+// Í¼µÄ±ß½á¹¹Ìå
+struct Edge {
+    int destId;               // Ä¿±êÕ¾µãID
+    double distance;          // ºÄÊ±/¾àÀë (·ÖÖÓ)
+    double price;             // ¼Û¸ñ (Ôª) ¡¾ĞÂÔö¡¿
+    std::string lineName;     // ±ßµÄËùÊôÏßÂ· ("TRANSFER"±íÊ¾»»³Ë)
+};
+
+// ³Ë³µ·½°¸½á¹¹Ìå£¬Æ¬¶ÎÊµÏÖ·Ö¶Î´¢´æ
 struct RouteSegment {
     std::string startStation;
     std::string endStation;
     std::string lineName;
-    double cost; // èŠ±è´¹ï¼ˆå¯èƒ½æ˜¯æ—¶é—´æˆ–è·ç¦»ï¼‰
+    double cost; // »¨·Ñ£¨Ê±¼ä£©
+    double price; // ¼Û¸ñ ¡¾ĞÂÔö¡¿
 };
 
-// å®Œæ•´çš„ä¹˜è½¦æ–¹æ¡ˆ
+// ÍêÕûµÄ³Ë³µ·½°¸
 struct Route {
     std::vector<RouteSegment> segments;
-    double totalCost;
-    std::string description; // æ–¹æ¡ˆæè¿° (ä¾‹å¦‚: 1å·çº¿ -> 4å·çº¿)
+    double totalCost; // ×ÜºÄÊ±
+    double totalPrice; // ×Ü¼Û¸ñ ¡¾ĞÂÔö¡¿
+    std::string description;
 };
 
-// é‚»æ¥è¡¨ä¸­çš„è¾¹ï¼ˆå›¾çš„è¾¹ï¼‰
-struct Edge {
-    int destId;      // ç›®æ ‡ç«™ç‚¹ID
-    double distance; // è¾¹çš„æƒå€¼ï¼ˆè·ç¦»æˆ–æ—¶é—´ï¼‰
-    std::string lineName; // è¾¹æ‰€å±çš„çº¿è·¯åç§°
-};
-
-// å…¨å±€æ•°æ®å®¹å™¨
+// È«¾ÖÊı¾İÈİÆ÷
 struct MetroData {
-    std::map<std::string, Line> lines;        // çº¿è·¯åç§° -> Line å¯¹è±¡
-    std::map<std::string, int> stationNameId; // ç«™ç‚¹åç§° -> ç«™ç‚¹ID
-    std::map<int, Station> stationIdInfo;     // ç«™ç‚¹ID -> ç«™ç‚¹ä¿¡æ¯
-    int nextStationId = 0;                    // ä¸‹ä¸€ä¸ªå¯ç”¨çš„ç«™ç‚¹ID
+    std::map<std::string, Line> lines;        // ÏßÂ·ĞÅÏ¢ (°´Ãû³ÆË÷Òı)
+    std::map<std::string, int> stationNameId; // Õ¾µãÃû³Æ -> ID Ó³Éä
+    std::map<int, Station> stationIdInfo;     // Õ¾µã ID -> Õ¾µãĞÅÏ¢
+    int nextStationId = 0;                    // ÏÂÒ»¸ö¿ÉÓÃµÄÕ¾µã ID
 };
 
 #endif // STRUCTURES_H
