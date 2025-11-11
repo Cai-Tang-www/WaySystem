@@ -5,6 +5,8 @@
 #include <iostream>
 #include <limits>
 #include <iomanip>
+#include <vector>
+#include <stdexcept>
 
 
 using namespace std;
@@ -38,29 +40,25 @@ void DataManager::loadData() {
     int lineCount = 0;
     while (getline(file, lineStr)) {
         lineCount++;
-        if (lineStr.empty()) continue;
+        if (lineStr.empty() || Utils::trim(lineStr).empty()) continue;
 
         vector<string> parts = Utils::split(lineStr, ';');
-        
-        // 数据格式应包含至少 5 部分：名称;票价;首班;末班;站点列表
         if (parts.size() < 5) {
-            Utils::printError("数据格式错误 (缺少字段) - 第 " + to_string(lineCount) + " 行: " + lineStr);
+            Utils::printError("数据格式错误 (字段少于5个) - 第 " + to_string(lineCount) + " 行。此线路将被忽略。");
             continue;
         }
-
-        Line line;
-        line.name = Utils::trim(parts[0]);
-        line.firstTrain = Utils::trim(parts[2]);
-        line.lastTrain = Utils::trim(parts[3]);
         
-        // 尝试解析全程票价，并捕获 stod 异常
+        Line line;
+        line.name = parts[0];
+        line.firstTrain = parts[2];
+        line.lastTrain = parts[3];
+
+        // 尝试转换票价
         try {
-            // parts[1] 是票价字符串
-            line.fullPrice = stod(Utils::trim(parts[1])); 
+            line.fullPrice = stod(parts[1]);
         } catch (const std::invalid_argument& e) {
-            // [修复]：捕获 stod 错误并给出提示，而不是崩溃
-            Utils::printError("数据格式错误 (票价非数字) - 第 " + to_string(lineCount) + " 行: '" + parts[1] + "'。此线路将被忽略。");
-            continue; // 跳过此条错误数据
+            Utils::printError("数据格式错误 (票价非数字) - 第 " + to_string(lineCount) + " 行。此线路将被忽略。");
+            continue;
         } catch (const std::out_of_range& e) {
             Utils::printError("数据格式错误 (票价数字溢出) - 第 " + to_string(lineCount) + " 行。此线路将被忽略。");
             continue;
@@ -70,9 +68,10 @@ void DataManager::loadData() {
         string stationsStr = "";
         for (size_t i = 4; i < parts.size(); ++i) {
             stationsStr += parts[i];
-            if (i < parts.size() - 1) stationsStr += ',';
+            if (i < parts.size() - 1) stationsStr += ';'; 
         }
-        line.stations = Utils::split(stationsStr, ',');
+        // 假设站点内部仍以逗号分隔
+        line.stations = Utils::split(stationsStr, ','); 
 
         if (line.stations.size() < 2) {
             Utils::printError("数据格式错误 (站点少于2个) - 第 " + to_string(lineCount) + " 行。此线路将被忽略。");
@@ -99,6 +98,7 @@ void DataManager::saveData() const {
              << line.firstTrain << ";"
              << line.lastTrain << ";";
         
+        // 站点列表 (以逗号分隔，并作为记录的最后一个字段)
         for (size_t i = 0; i < line.stations.size(); ++i) {
             file << line.stations[i];
             if (i < line.stations.size() - 1) {
@@ -107,7 +107,6 @@ void DataManager::saveData() const {
         }
         file << "\n";
     }
-
-    Utils::printMessage("数据已成功保存至文件: " + filePath_);
     file.close();
+    Utils::printMessage("数据已自动保存到文件: " + filePath_);
 }
