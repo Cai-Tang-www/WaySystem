@@ -5,21 +5,21 @@
 #include <vector>
 #include <iostream>
 #include "Structures.h"
-// è¾…åŠ©å·¥å…·å‡½æ•°é›†åˆ
+// ¸¨Öú¹¤¾ßº¯Êı¼¯ºÏ
 namespace Utils {
-    // å­—ç¬¦ä¸²ä¿®å‰ªï¼ˆå»é™¤é¦–å°¾ç©ºç™½ï¼‰
+    // ×Ö·û´®ĞŞ¼ô£¨È¥³ıÊ×Î²¿Õ°×£©
     std::string trim(const std::string& str);
     
-    // å­—ç¬¦ä¸²åˆ†å‰²
+    // ×Ö·û´®·Ö¸î
     std::vector<std::string> split(const std::string& str, char delimiter);
 
-    // æ‰“å°ç¨‹åºè¿è¡Œæ—¶çš„æç¤ºä¿¡æ¯
+    // ´òÓ¡³ÌĞòÔËĞĞÊ±µÄÌáÊ¾ĞÅÏ¢
     void printMessage(const std::string& msg);
     
-    // æ‰“å°é”™è¯¯ä¿¡æ¯
+    // ´òÓ¡´íÎóĞÅÏ¢
     void printError(const std::string& msg);
 
-    // æ ¼å¼åŒ–æ‰“å°è·¯çº¿æ–¹æ¡ˆ
+    // ¸ñÊ½»¯´òÓ¡Â·Ïß·½°¸
     void printRoute(const Route& route, int index);
 }
 
