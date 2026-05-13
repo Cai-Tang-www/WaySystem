@@ -107,7 +107,7 @@ int main() {
     // 初始化数据管理器和图
     MetroData metroData;
     DataManager dataManager(dataFilePath, metroData);
-    MetroGraph metroGraph(metroData); 
+    MetroGraph metroGraph(metroData, metroData); 
     
     int choice = -1;
     while (choice != 0) {

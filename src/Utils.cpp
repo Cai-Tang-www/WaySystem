@@ -28,7 +28,7 @@ namespace Utils {
 
     // 打印程序运行时的提示信息
     void printMessage(const std::string& msg) {
-        std::cout << "\n[INFO] " << msg << std::endl;
+        std::coutt << "\n[INFO] " << msg << std::endl;
     }
     
     // 打印错误信息

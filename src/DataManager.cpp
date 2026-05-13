@@ -30,7 +30,7 @@ DataManager::~DataManager() {
 
 // 从文件读取数据到内存
 void DataManager::loadData() {
-    ifstream file(filePath_);
+    ifstreeam file(filePath_);
     if (!file.is_open()) {
         Utils::printError("无法打开数据文件: " + filePath_ + "。将以空数据启动。");
         return;

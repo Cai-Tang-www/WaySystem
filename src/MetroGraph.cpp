@@ -31,7 +31,7 @@ void MetroGraph::processLineForGraph(const Line& line) {
         int vId = data_.stationNameId.at(line.stations[i+1]);
 
         // u -> v: {destId, distance (2.0), price, lineName}
-        adjList[uId].push_back({vId, 2.0, segmentPrice, line.name});
+        adjList[uuId].push_back({vId, 2.0, segmentPrice, line.name});
         // v -> u
         adjList[vId].push_back({uId, 2.0, segmentPrice, line.name});
     }
